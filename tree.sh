@@ -1,39 +1,41 @@
 #!/bin/bash
-trap "tput reset; tput cnorm; exit" 2
-clear
-tput civis
+trap "tput reset; tput cnorm; exit" 2 # when signal 2 (SIGINT, caused by pressing Ctrl+C) is received, reset the
+                                      # terminal (tput reset), make the cursor visible (tput cnorm), and exit
+clear # clear the screen
+tput civis # make the cursor invisible
 lin=2
-col=$(($(tput cols) / 2))
-c=$((col-1))
-est=$((c-2))
-color=0
-tput setaf 2; tput bold
+col=$(($(tput cols) / 2)) # used to center the tree
+c=$((col-1)) # used to place the trunk
+est=$((c-2)) # not used?
+color=0 # used for the lights
+tput setaf 2; tput bold # set the foreground (text) color to 2, i.e green (tput setaf 2) and make the text bold (tput bold)
 
 # Tree
-for ((i=1; i<20; i+=2))
+for ((i=1; i<20; i+=2)) # add one additional character on the left and one on the right each line; 10 (20 / 2) lines total
 {
-    tput cup $lin $col
-    for ((j=1; j<=i; j++))
+    tput cup $lin $col # move the cursor to the start of this line
+    for ((j=1; j<=i; j++)) # for every character in the line...
     {
-        echo -n \*
+        echo -n \* # output an asterisk (the "-n" switch prevents a new line from being outputed)
     }
-    let lin++
-    let col--
+    let lin++ # go to next line
+    let col-- # move start column one character to the left to keep text centered
 }
 
-tput sgr0; tput setaf 3
+tput sgr0; tput setaf 3 # reset text attributes, i.e. unbold (tput sgr0), then set text color to 3, i.e brownish, the trunk color (tput setaf 3)
 
 # Trunk
-for ((i=1; i<=2; i++))
+for ((i=1; i<=2; i++)) # trunk is two lines tall
 {
-    tput cup $((lin++)) $c
-    echo 'mWm'
+    tput cup $((lin++)) $c # move to start of this line of the trunk, then increment the line number for next time
+    echo 'mWm' # print this line of the trunk
 }
-new_year=$(date +'%Y')
-let new_year++
-tput setaf 1; tput bold
-tput cup $lin $((c - 6)); echo MERRY CHRISTMAS
-tput cup $((lin + 1)) $((c - 10)); echo And lots of CODE in $new_year
+new_year=$(date +'%Y') # get current year, padded with zeroes on the left if necessary (it won't be)
+let new_year++ # make it into next year
+tput setaf 1; tput bold # make text red (foreground color 1) and bold
+tput cup $lin $((c - 6)); echo MERRY CHRISTMAS # print "MERRY CHRISTMAS" centered on the next line below the trunk
+tput cup $((lin + 1)) $((c - 10)); echo And lots of CODE in $new_year # print centered on line below "MERRY CHRISTMAS" (only
+                                                                      # properly centers text for new years up to 9999)
 let c++
 k=1
 
